@@ -1,0 +1,15 @@
+{
+  "name": "versioned-task-controller",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "小型控制器沙盘：带版本号的任务资源、可暂停单步的事件投递、两种交接策略的同一次断线检验",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test \"test/**/*.test.js\"",
+    "drill": "node scripts/drill-cli.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

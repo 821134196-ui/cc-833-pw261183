@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>有且只有一个所有者 · 控制器沙盘</title>
+<link rel="stylesheet" href="/public/app.css">
+</head>
+<body>
+<div class="viz-root" id="app">
+  <header class="top">
+    <div class="titles">
+      <h1>有且只有一个所有者</h1>
+      <p class="sub">本地模拟的 API Server · 版本化任务资源 · 事件可暂停单步 · 旧实例的活必须有归宿</p>
+    </div>
+    <div class="controls">
+      <div class="seg" role="tablist" aria-label="交接策略">
+        <button role="tab" data-strategy="takeover" aria-selected="true">接管 · takeover</button>
+        <button role="tab" data-strategy="wait" aria-selected="false">直接等待 · wait</button>
+      </div>
+      <label class="check"><input type="checkbox" id="oldReturns" checked> 旧实例重新上线</label>
+      <button id="reset" class="ghost-btn">重置沙盘</button>
+      <button id="runAll" class="primary-btn">跑完整断线检查</button>
+    </div>
+  </header>
+
+  <section class="verdict" id="verdict" aria-live="polite"></section>
+
+  <div class="grid">
+    <section class="panel spans-2" id="serverPanel">
+      <div class="panel-head">
+        <h2>API Server <span class="mono muted" id="serverRv"></span></h2>
+        <div class="transport">
+          <button id="pauseBtn" class="ghost-btn" aria-pressed="false">暂停投递</button>
+          <button id="stepBtn" class="ghost-btn">单步一个</button>
+          <button id="resumeBtn" class="ghost-btn">全部放行</button>
+          <span class="pill mono" id="pendingPill">排队 0</span>
+        </div>
+      </div>
+      <p class="hint">暂停时写照常提交，事件只在队列里。单步可指定版本，制造「删除先到、迟到的创建后到」。</p>
+      <div class="inject" id="injectRow">
+        <span class="muted">故障注入：</span>
+        <button class="ghost-btn" data-inject="create-ghost">旧实例发出 create task/ghost</button>
+        <button class="ghost-btn" data-inject="delete-ghost">管理员删除 task/ghost</button>
+        <button class="ghost-btn" data-inject="delete-b">管理员删除 task/b</button>
+        <button class="ghost-btn" data-inject="create-c">管理员新建 task/c</button>
+        <button class="ghost-btn" data-inject="new-online">新实例从旧检查点上线</button>
+        <button class="primary-btn" id="playScript">按题目时序自动播放</button>
+      </div>
+      <div class="table-wrap">
+        <table class="grid-table" id="eventTable">
+          <thead>
+            <tr><th>rv</th><th>事件</th><th>key</th><th class="num">时钟</th><th>已投递</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel spans-2" id="holdersPanel">
+      <div class="panel-head">
+        <h2>最终持有者</h2>
+        <span class="hint">只看服务器接受的写入；离线实例名下的活不算有人执行。</span>
+      </div>
+      <div class="holder-strip" id="holderStrip"></div>
+      <div class="table-wrap">
+        <table class="grid-table" id="holderTable">
+          <thead>
+            <tr><th>任务</th><th>持有者</th><th>epoch</th><th>进度</th><th>状态</th><th>所有者数</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="controllersPanel">
+      <div class="panel-head"><h2>控制器实例</h2><span class="hint">点击卡片切换“谁在观察”</span></div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="panel" id="ledgerPanel">
+      <div class="panel-head"><h2>交接台账 · <span id="ledgerWho"></span></h2></div>
+      <p class="hint">断线时挂起的每一项，最终交给了谁；未解决会标红。</p>
+      <ul class="ledger" id="ledgerList"></ul>
+    </section>
+
+    <section class="panel spans-2" id="journalPanel">
+      <div class="panel-head"><h2>实例日志 · <span id="journalWho"></span></h2></div>
+      <ol class="journal" id="journalList"></ol>
+    </section>
+
+    <section class="panel spans-4" id="stepsPanel">
+      <div class="panel-head">
+        <h2>时序回放</h2>
+        <span class="hint">每格是一次快照；红色表示有任务没有在线持有者，双圈表示多持有者。</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <section class="panel spans-4" id="comparePanel">
+      <div class="panel-head"><h2>同一次断线检验 · 两种策略</h2></div>
+      <p class="hint">完全相同的故障脚本，只换交接策略。同一个问题：结束时是否每个未完成任务都恰好有一个在线持有者。</p>
+      <div class="compare" id="compare"></div>
+    </section>
+  </div>
+</div>
+<script type="module" src="/public/app.js"></script>
+</body>
+</html>
